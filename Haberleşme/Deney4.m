@@ -1,0 +1,35 @@
+clc;clear;close all;
+fs=1000;
+t=0:1/fs:0.5;
+am1=10; am2=20; ac1=30;
+f1=10; f2=50; fc=100;
+ct=ac1*cos(2*pi*fc*t);
+m1t=am1*cos(2*pi*f1*t);
+m2t=am2*cos(2*pi*f2*t);
+x1t=m1t + m2t;
+x2t=m1t .* m2t;
+s1t=x1t.*ct;
+r1t=s1t.*ct;
+s2t=x2t.*ct;
+[b,a]=butter(5,fc/(fs/2));
+r1t=(filter(b,a,r1t))/8;
+[b1,a1]=butter(7,[fc fc+f2]/(fs/2));
+s2t=filter(b1,a1,s2t);
+[m1f,n,f_axis] = nfft(m1t,fs);
+[m2f,n,f_axis] = nfft(m2t,fs);
+[cf,n,f_axis] = nfft(ct,fs);
+[x1f,n,f_axis] = nfft(x1t,fs);
+[x2f,n,f_axis] = nfft(x2t,fs);
+[s1f,n,f_axis] = nfft(s1t,fs);
+[s2f,n,f_axis] = nfft(s2t,fs);
+[r1f,n,f_axis] = nfft(r1t,fs);
+figure
+subplot(4,2,1);plot(t,m1t);title('m1t');
+subplot(4,2,2);plot(t,m2t);title('m2t');
+subplot(4,2,3);plot(t,x2t);title('x2t');
+subplot(4,2,4);plot(t,ct);title('ct');
+subplot(4,2,5);plot(f_axis,abs(m1f));title('m1f');
+subplot(4,2,6);plot(f_axis,abs(m2f));title('m2f');
+subplot(4,2,7);plot(f_axis,abs(cf));title('cf');
+subplot(4,2,8);plot(f_axis,abs(s2f));title('s2f');
+
